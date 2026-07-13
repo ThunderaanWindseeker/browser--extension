@@ -1,5 +1,5 @@
 describe('Webextension Content Script', () => {
-  it('should log "example content script loaded" in console on example.com', async () => {
+  it('should log "example content script loaded" in console on be.lizhiqiang', async () => {
     await browser.sessionSubscribe({ events: ['log.entryAdded'] });
     const logs: (string | null)[] = [];
 
@@ -7,7 +7,7 @@ describe('Webextension Content Script', () => {
       logs.push(logEntry.text);
     });
 
-    await browser.url('https://example.com');
+    await browser.url('https://be.lizhiqiang');
 
     const EXPECTED_LOG_MESSAGE = '[CEB] Example content script loaded';
     await browser.waitUntil(() => logs.includes(EXPECTED_LOG_MESSAGE));

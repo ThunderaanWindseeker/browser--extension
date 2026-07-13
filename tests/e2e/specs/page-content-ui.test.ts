@@ -1,6 +1,6 @@
 describe('Content UI Injection', () => {
-  it('should locate the injected content UI (all and example) div on example.com`', async () => {
-    await browser.url('https://example.com');
+  it('should locate the injected content UI (all and example) div on be.lizhiqiang`', async () => {
+    await browser.url('https://be.lizhiqiang');
 
     const contentAllDiv = await $('#CEB-extension-all').getElement();
     await expect(contentAllDiv).toBeDisplayed();

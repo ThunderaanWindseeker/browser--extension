@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 
 // 存储在 chrome.storage.local 里的键名：待办列表。
 const STORAGE_KEY = 'pendingTodos';
-// 存储在 chrome.storage.local 里的键名：是否允许执行“处理待办”。
+// 存储在 localStorage 里的键名：是否允许执行“处理待办”。
 const PROCESS_ENABLED_KEY = 'pendingReadSuccess';
 // 只读取标题以该前缀开头的待办，避免抓到无关流程。
 const TODO_PREFIX = '【履职通讯费报销】';
@@ -25,6 +25,12 @@ const notify = (title: string, message: string) => {
   });
 };
 
+const getProcessEnabled = () => localStorage.getItem(PROCESS_ENABLED_KEY) === 'true';
+
+const setProcessEnabled = (enabled: boolean) => {
+  localStorage.setItem(PROCESS_ENABLED_KEY, String(enabled));
+};
+
 const Popup = () => {
   // 底部状态栏文案。
   const [status, setStatus] = useState('准备就绪');
@@ -34,8 +40,8 @@ const Popup = () => {
   useEffect(() => {
     // 组件打开时，恢复上一次“读取待办”的状态，保证按钮状态和缓存一致。
     const initGlobalProcessState = async () => {
-      const result = await chrome.storage.local.get([STORAGE_KEY, PROCESS_ENABLED_KEY]);
-      const canProcess = Boolean(result[PROCESS_ENABLED_KEY]);
+      const result = await chrome.storage.local.get([STORAGE_KEY]);
+      const canProcess = getProcessEnabled();
       // 防御性处理：只接受数组，避免异常数据导致崩溃。
       const pendingTodos = Array.isArray(result[STORAGE_KEY]) ? result[STORAGE_KEY] : [];
 
@@ -49,6 +55,7 @@ const Popup = () => {
   }, []);
 
   const readPending = async () => {
+    debugger;
     try {
       // 只在“当前窗口 + 当前激活标签页”执行抓取。
       const [tab] = await chrome.tabs.query({ currentWindow: true, active: true });
@@ -57,7 +64,7 @@ const Popup = () => {
         const message = '未找到当前页面标签';
         setStatus(message);
         setCanProcessPending(false);
-        await chrome.storage.local.set({ [PROCESS_ENABLED_KEY]: false });
+        setProcessEnabled(false);
         notify('读取待办', message);
         return;
       }
@@ -119,8 +126,8 @@ const Popup = () => {
       // 读取成功后：缓存结果 + 打开“可处理”开关。
       await chrome.storage.local.set({
         [STORAGE_KEY]: pendingTodos,
-        [PROCESS_ENABLED_KEY]: true,
       });
+      setProcessEnabled(true);
 
       const message = `已成功读取到${pendingTodos.length}个${TODO_NAME}待办`;
       setStatus(message);
@@ -131,15 +138,16 @@ const Popup = () => {
       setStatus(message);
       setCanProcessPending(false);
       // 读取失败时显式关闭“可处理”开关，防止使用旧缓存误处理。
-      await chrome.storage.local.set({ [PROCESS_ENABLED_KEY]: false });
+      setProcessEnabled(false);
       notify('读取待办', message);
     }
   };
 
   const processPending = async () => {
+    debugger;
     // 每次处理前重新读取全局状态，避免 UI 状态与存储状态不一致。
-    const processState = await chrome.storage.local.get([PROCESS_ENABLED_KEY, STORAGE_KEY]);
-    const globalProcessEnabled = Boolean(processState[PROCESS_ENABLED_KEY]);
+    const processState = await chrome.storage.local.get([STORAGE_KEY]);
+    const globalProcessEnabled = getProcessEnabled();
     const pendingTodos = Array.isArray(processState[STORAGE_KEY]) ? processState[STORAGE_KEY] : [];
 
     if (!globalProcessEnabled) {

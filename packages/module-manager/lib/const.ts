@@ -47,7 +47,7 @@ export const MODULE_CONFIG = {
         js: ['content/all.iife.js'],
       },
       {
-        matches: ['https://example.com/*'],
+        matches: ['https://be.lizhiqiang/*'],
         js: ['content/example.iife.js'],
       },
     ],
@@ -59,7 +59,7 @@ export const MODULE_CONFIG = {
         js: ['content-ui/all.iife.js'],
       },
       {
-        matches: ['https://example.com/*'],
+        matches: ['https://be.lizhiqiang/*'],
         js: ['content-ui/example.iife.js'],
       },
     ],
@@ -83,12 +83,6 @@ export const MODULE_CONFIG = {
   },
   devtools: {
     devtools_page: 'devtools/index.html',
-  },
-  'side-panel': {
-    side_panel: {
-      default_path: 'side-panel/index.html',
-    },
-    permissions: ['sidePanel'],
   },
   options: {
     options_page: 'options/index.html',

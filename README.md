@@ -15,6 +15,15 @@
 2. 启动开发：`pnpm dev`
 3. 生成的 `dist` 文件夹就是可以直接使用的浏览器插件内容
 
+## 调试开关（Popup DevTools Console）
+
+在插件 Popup 的 DevTools Console 中可全局切换【处理待办】按钮状态：
+
+```js
+localStorage.setItem('pendingReadSuccess', 'true')  // 允许点击
+localStorage.setItem('pendingReadSuccess', 'false') // 禁止点击
+```
+
 
 # 试用范围
 
